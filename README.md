@@ -1,3 +1,7 @@
+# omnikeeper CLI GraphQL client
+
+Small CLI application for interacting with an omnikeeper instance via GraphQL queries and mutations. Can be used to automate the configuration of an omnikeeper instance.
+
 ## Requirements
 
 - (optional) credentials helper: https://github.com/docker/docker-credential-helpers
@@ -14,6 +18,10 @@ sudo yum localinstall okql.rpm
 # or:
 sudo alien -i okql.rpm
 ~~~
+
+## Notes
+In terms of authentication, only the oauth flow "Resource Owner Password Credentials Grant" is supported. Other modes, such as the "Device Authorization Flow" are not (yet) supported. That means it is necessary to supply username+password of the user to authenticate.
+
 
 ## Examples
 
