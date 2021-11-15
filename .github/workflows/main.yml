@@ -21,7 +21,7 @@ jobs:
           echo "Building version ${{ env.VERSION }}"
           GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$VERSION" -o bin/okql cmd/main.go
           sed -i "s/\!release\!/${{ github.run_id }}/" build/rpm.json
-          go-bin-rpm generate -o okql.rpm --version ${{ env.VERSION }} --arch amd64
+          go-bin-rpm generate -o okql.rpm --version ${{ env.VERSION }} --arch amd64 --file build/rpm.json
           ls -lah okql.rpm
 
       - name: Create release
