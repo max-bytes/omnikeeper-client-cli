@@ -27,13 +27,18 @@ func main() {
 	flag.StringVarP(&keycloakClientID, "clientid", "c", "landscape-omnikeeper", "Keycloak Client ID")
 	flag.StringVarP(&username, "username", "u", "", "Username")
 	flag.StringVarP(&password, "password", "p", "", "Password")
-	flag.StringVarP(&omnikeeperURL, "omnikeeperurl", "o", "", "Omnikeeper Base URL")
+	flag.StringVarP(&omnikeeperURL, "omnikeeper-url", "o", "", "Omnikeeper Base URL")
 	flag.StringVarP(&graphqlQuery, "query", "q", "", "GraphQL Query")
 	flag.BoolP("stdin", "s", false, "Read query from stdin")
+	flag.BoolP("suppress-log-output", "i", false, "Suppress log-output, only output response from omnikeeper")
 	flag.Parse()
 
-	if !isFlagPassed("omnikeeperurl") {
+	if !isFlagPassed("omnikeeper-url") {
 		log.Fatal("omnikeeper URL not set")
+	}
+
+	if isFlagPassed("suppress-log-output") {
+		log.SetOutput(ioutil.Discard)
 	}
 
 	cs := credential.NewCredentialStore()
