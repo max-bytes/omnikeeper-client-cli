@@ -1,0 +1,17 @@
+{
+    "name": "okql",
+    "release": "!release!",
+    "summary": "Omnikeeper client CLI",
+    "description": "Omnikeeper client CLI",
+    "license": "LICENSE",
+    "url": "https://github.com/max-bytes/omnikeeper-client-cli",
+    "files": [
+      {
+        "from": "bin/okql",
+        "to": "%{_bindir}/",
+        "base": "bin/",
+        "type": ""
+      }
+    ]
+  }
+  
