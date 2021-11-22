@@ -24,7 +24,7 @@ func main() {
 	var password string
 	var omnikeeperURL string
 	var graphqlQuery string
-	flag.StringVarP(&keycloakClientID, "clientid", "c", "landscape-omnikeeper", "Keycloak Client ID")
+	flag.StringVarP(&keycloakClientID, "clientid", "c", "omnikeeper", "Keycloak Client ID")
 	flag.StringVarP(&username, "username", "u", "", "Username")
 	flag.StringVarP(&password, "password", "p", "", "Password")
 	flag.StringVarP(&omnikeeperURL, "omnikeeper-url", "o", "", "Omnikeeper Base URL")
