@@ -54,5 +54,6 @@ func (cs *CredentialStore) tryGet(url string) (*credentials.Credentials, error) 
 }
 
 func (cs *CredentialStore) Get(url string) (*credentials.Credentials, error) {
-	return client.Get(cs.nativeStoreWin, url)
+	c, err := cs.tryGet(url)
+	return c, err
 }
