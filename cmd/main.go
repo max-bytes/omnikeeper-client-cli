@@ -24,9 +24,11 @@ func main() {
 	var password string
 	var omnikeeperURL string
 	var graphqlQuery string
+	var token string
 	flag.StringVarP(&keycloakClientID, "clientid", "c", "omnikeeper", "Keycloak Client ID")
 	flag.StringVarP(&username, "username", "u", "", "Username")
 	flag.StringVarP(&password, "password", "p", "", "Password")
+	flag.StringVarP(&token, "token", "t", "", "OAuth2.0 Token")
 	flag.StringVarP(&omnikeeperURL, "omnikeeper-url", "o", "", "Omnikeeper Base URL")
 	flag.StringVarP(&graphqlQuery, "query", "q", "", "GraphQL Query")
 	flag.BoolP("stdin", "s", false, "Read query from stdin")
@@ -43,47 +45,51 @@ func main() {
 
 	cs := credential.NewCredentialStore()
 
-	var cred *credentials.Credentials
-	if isFlagPassed("username") {
-		// username and password is set, we force a login
+	if !isFlagPassed("token") {
+		// if token is not passed in via arguments, fetch it
+		var cred *credentials.Credentials
+		if isFlagPassed("username") {
+			// username and password is set, we force a login
 
-		// read password from stdin, if not specified
-		if !isFlagPassed("password") {
-			fmt.Print("Enter Password: ")
-			bytePassword, err := term.ReadPassword(int(syscall.Stdin))
-			if err != nil {
-				log.Fatal("Error reading password from stdin", err)
+			// read password from stdin, if not specified
+			if !isFlagPassed("password") {
+				fmt.Print("Enter Password: ")
+				bytePassword, err := term.ReadPassword(int(syscall.Stdin))
+				if err != nil {
+					log.Fatal("Error reading password from stdin", err)
+				}
+				password = string(bytePassword)
 			}
-			password = string(bytePassword)
+
+			// store username/password in credential store
+			c := &credentials.Credentials{
+				ServerURL: omnikeeperURL,
+				Username:  username,
+				Secret:    password,
+			}
+			err := cs.Store(c)
+			if err != nil {
+				log.Printf("Warning: could not store credentials in credential store: %v", err)
+			}
+			cred = c
+		} else {
+			// no username specified, rely on stored credentials
+			c, err := cs.Get(omnikeeperURL)
+			if err != nil {
+				log.Fatal("Error getting credentials from credential store", err)
+			}
+
+			log.Printf("Re-using stored credentials")
+			cred = c
 		}
 
-		// store username/password in credential store
-		c := &credentials.Credentials{
-			ServerURL: omnikeeperURL,
-			Username:  username,
-			Secret:    password,
-		}
-		err := cs.Store(c)
+		fetchedToken, err := login(omnikeeperURL, keycloakClientID, cred.Username, cred.Secret)
 		if err != nil {
-			log.Printf("Warning: could not store credentials in credential store: %v", err)
+			log.Fatal("Error logging in", err)
 		}
-		cred = c
-	} else {
-		// no username specified, rely on stored credentials
-		c, err := cs.Get(omnikeeperURL)
-		if err != nil {
-			log.Fatal("Error getting credentials from credential store", err)
-		}
-
-		log.Printf("Re-using stored credentials")
-		cred = c
+		token = fetchedToken
+		log.Printf("Successfully logged in to %s", omnikeeperURL)
 	}
-
-	token, err := login(omnikeeperURL, keycloakClientID, cred.Username, cred.Secret)
-	if err != nil {
-		log.Fatal("Error logging in", err)
-	}
-	log.Printf("Successfully logged in to %s", omnikeeperURL)
 
 	var query string
 	if isFlagPassed("query") {
