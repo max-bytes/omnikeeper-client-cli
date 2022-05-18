@@ -52,3 +52,8 @@ query {
 }
 EOF
 ~~~
+
+Run query from file:
+~~~bash
+okql -o https://10.0.0.43:45455 --stdin < file.graphql
+~~~
