@@ -23,10 +23,11 @@ jobs:
           sed -i "s/\!release\!/${{ github.run_id }}/" build/rpm.json
           go-bin-rpm generate -o okql.rpm --version ${{ env.VERSION }} --arch amd64 --file build/rpm.json
           ls -lah okql.rpm
+          cp bin/okql . # copy binary to root folder to be able to use it easily in next step
 
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "okql.rpm"
+          artifacts: "okql.rpm,okql"
           omitBody: true
           token: ${{ secrets.GITHUB_TOKEN }}
