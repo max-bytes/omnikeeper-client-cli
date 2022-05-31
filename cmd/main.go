@@ -32,7 +32,8 @@ func main() {
 	flag.StringVarP(&omnikeeperURL, "omnikeeper-url", "o", "", "Omnikeeper Base URL")
 	flag.StringVarP(&graphqlQuery, "query", "q", "", "GraphQL Query")
 	flag.BoolP("stdin", "s", false, "Read query from stdin")
-	flag.BoolP("suppress-log-output", "i", false, "Suppress log-output, only output response from omnikeeper")
+	flag.BoolP("get-token-only", "k", false, "Only login and return access token")
+	flag.BoolP("suppress-log-output", "i", false, "Suppress log-output, only output response from omnikeeper (or token, if -k is set)")
 	flag.Parse()
 
 	if !isFlagPassed("omnikeeper-url") {
@@ -91,26 +92,30 @@ func main() {
 		log.Printf("Successfully logged in to %s", omnikeeperURL)
 	}
 
-	var query string
-	if isFlagPassed("query") {
-		query = graphqlQuery
-	} else if isFlagPassed("stdin") {
-		// read from stdin
-		bytes, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			log.Fatal("Error reading query from stdin", err)
-		}
-		query = string(bytes)
-	}
-
-	if query != "" {
-		graphqlURL := fmt.Sprintf("%s/graphql", omnikeeperURL)
-		resp, err := executeGraphql(graphqlURL, token, query)
-		if err != nil {
-			log.Fatalf("Error executing graphql: %v", err)
+	if isFlagPassed("get-token-only") {
+		fmt.Print(token)
+	} else {
+		var query string
+		if isFlagPassed("query") {
+			query = graphqlQuery
+		} else if isFlagPassed("stdin") {
+			// read from stdin
+			bytes, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
+				log.Fatal("Error reading query from stdin", err)
+			}
+			query = string(bytes)
 		}
 
-		fmt.Print(resp)
+		if query != "" {
+			graphqlURL := fmt.Sprintf("%s/graphql", omnikeeperURL)
+			resp, err := executeGraphql(graphqlURL, token, query)
+			if err != nil {
+				log.Fatalf("Error executing graphql: %v", err)
+			}
+
+			fmt.Print(resp)
+		}
 	}
 }
 

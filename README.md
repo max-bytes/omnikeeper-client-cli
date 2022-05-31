@@ -57,3 +57,8 @@ Run query from file:
 ~~~bash
 okql -o https://10.0.0.43:45455 --stdin < file.graphql
 ~~~
+
+Only fetch token:
+~~~bash
+okql -o https://10.0.0.43:45455 -u username -p password -k -i
+~~~
