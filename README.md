@@ -22,6 +22,11 @@ sudo alien -i okql.rpm
 ## Notes
 In terms of authentication, only the oauth flow "Resource Owner Password Credentials Grant" is supported. Other modes, such as the "Device Authorization Flow" are not (yet) supported. That means it is necessary to supply username+password of the user to authenticate.
 
+## Docker image
+For certain usecases like CICD pipelines, a docker image is provided that contains a runnable okql binary.
+```
+docker run ghcr.io/max-bytes/omnikeeper-client-cli:0.5.2 okql ...
+```
 
 ## Examples
 
