@@ -38,6 +38,7 @@ jobs:
 
   build-docker-image:
     runs-on: ubuntu-20.04
+    needs: [build-release]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
